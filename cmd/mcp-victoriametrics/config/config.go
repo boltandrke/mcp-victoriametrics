@@ -28,6 +28,7 @@ type Config struct {
 	customHeaders     map[string]string
 
 	entryPointURL *url.URL
+	vmalertURL    *url.URL
 	vmc           *vmcloud.VMCloudAPIClient
 }
 
@@ -180,6 +181,10 @@ func (c *Config) BearerToken() string {
 
 func (c *Config) EntryPointURL() *url.URL {
 	return c.entryPointURL
+}
+
+func (c *Config) VmalertURL() *url.URL {
+	return c.vmalertURL
 }
 
 func (c *Config) IsToolDisabled(toolName string) bool {

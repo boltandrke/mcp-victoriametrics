@@ -201,6 +201,11 @@ func getSelectURL(ctx context.Context, cfg *config.Config, tcr mcp.CallToolReque
 
 	// Single node
 	if isSingle {
+		// If a dedicated vmalert URL is configured and the request targets vmalert,
+		// route directly to the vmalert endpoint (stripping the "vmalert" path prefix).
+		if len(path) > 0 && path[0] == "vmalert" && cfg.VmalertURL() != nil {
+			return cfg.VmalertURL().JoinPath(path[1:]...).String(), nil
+		}
 		return entrypointURL.JoinPath(path...).String(), nil
 	}
 
