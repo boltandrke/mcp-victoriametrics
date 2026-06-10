@@ -15,19 +15,17 @@ func TestGetTextBodyForRequest(t *testing.T) {
 	// Create a mock config
 	cfg := &config.Config{}
 
-	// Save the original HTTP client
-	originalClient := http.DefaultClient
+	// Save the original transport
+	originalTransport := httpClient.Transport
 
-	// Create a mock HTTP client
-	http.DefaultClient = &http.Client{
-		Transport: &mockTransport{
-			response: &http.Response{
-				StatusCode: http.StatusOK,
-				Body:       io.NopCloser(bytes.NewBufferString("test response")),
-			},
+	// Install a mock transport
+	httpClient.Transport = &mockTransport{
+		response: &http.Response{
+			StatusCode: http.StatusOK,
+			Body:       io.NopCloser(bytes.NewBufferString("test response")),
 		},
 	}
-	defer func() { http.DefaultClient = originalClient }()
+	defer func() { httpClient.Transport = originalTransport }()
 
 	// Create a test request
 	req, err := http.NewRequest(http.MethodGet, "http://example.com", nil)
@@ -73,19 +71,17 @@ func TestGetTextBodyForRequestError(t *testing.T) {
 	// Create a mock config
 	cfg := &config.Config{}
 
-	// Save the original HTTP client
-	originalClient := http.DefaultClient
+	// Save the original transport
+	originalTransport := httpClient.Transport
 
-	// Create a mock HTTP client that returns an error
-	http.DefaultClient = &http.Client{
-		Transport: &mockTransport{
-			response: &http.Response{
-				StatusCode: http.StatusInternalServerError,
-				Body:       io.NopCloser(bytes.NewBufferString("error message")),
-			},
+	// Install a mock transport that returns an error response
+	httpClient.Transport = &mockTransport{
+		response: &http.Response{
+			StatusCode: http.StatusInternalServerError,
+			Body:       io.NopCloser(bytes.NewBufferString("error message")),
 		},
 	}
-	defer func() { http.DefaultClient = originalClient }()
+	defer func() { httpClient.Transport = originalTransport }()
 
 	// Create a test request
 	req, err := http.NewRequest(http.MethodGet, "http://example.com", nil)
